@@ -11,11 +11,7 @@
 
 #include "common.h"
 
-#define LCD_SLAVE_ADDR			0x3e
-#define TWI_BAUD				0x05	//TWI freq ~100kHz 
-#define OWN_ADR					60
-#define R	1
-#define W	0
+#define TWI_BAUD				0x05	//TWI freq ~100kHz
 
 /* Status codes for master */
 typedef enum TWIM_States_enum {
@@ -69,37 +65,10 @@ typedef struct TWI_Master {
 
 extern TWI_Master_t twi;
 
-void TWI_MasterInit(uint8_t scale,
-					uint8_t baud);
+void TWI_MasterInit(uint8_t scale, uint8_t baud);
 TWIM_State_t TWI_MasterState(void);
 bool TWI_MasterReady(void);
 bool TWI_MasterWrite(uint8_t addr, uint8_t *data, uint8_t bytesToWrite);
 bool TWI_MasterRead(uint8_t addr, uint8_t bytesToRead);
-void TWI_MasterInterruptHandler(void);
-void TWI_MasterArbitrationLostBusErrorHandler(void);
-void TWI_MasterWriteHandler(void);
-void TWI_MasterReadHandler(void);
-void TWI_MasterTransactionFinished(uint8_t result);
-void TWI_StateMachine(void);
-
-void TWI_check_presence(void);
-void TWI_ReadIna220(void);
-
-typedef struct
-{
-	unsigned char slave_adr;				//Slave address and W/R byte
-	unsigned char size;						//Number of bytes to send or
-	//receive
-	unsigned char *data_ptr;				//Pointer to the bytes to send
-}tx_type;
-
-void  Wait_TWI_int(void);
-unsigned char Send_adr(unsigned char adr);
-unsigned char Send_byte(unsigned char data);
-unsigned char Send_to_TWI(tx_type *data_pack);
-void TWI_test(void);
-
-
-
 
 #endif /* TWI_MASTER_DRIVER_H_ */

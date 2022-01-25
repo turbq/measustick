@@ -7,6 +7,9 @@
 
 #include "lcd_top.h"
 #include "lcd_1602twi.h"
+#include "ina220.h"
+
+uint8_t f_lcdPrint = 0;
 
 void lcd_clr(){
 	lcd_instr(LCD_CLEARDISPLAY);
@@ -36,4 +39,27 @@ void lcd_printf(char *format, ...){
 	//ch[len] = ' ';
 	va_end(argptr);
 	lcd_ruprint(ch, len);
+}
+
+void lcd_cout(void)
+{
+	uint16_t mv_voltage = bus_read();
+	int16_t ma_curr = current_read();
+	uint32_t pwr = pwr_read()/100;
+	
+	if (!f_lcdPrint)
+		return;
+	
+	lcd_clr();
+	lcd_returnhome();
+	if (ma_curr < 0) {
+		ma_curr = abs(ma_curr);
+		lcd_printf("-%d.%03dA %lu.%luW", ma_curr/1000, ma_curr%1000, pwr/10, pwr%10);
+	} else {
+		lcd_printf(" %d.%03dA %lu.%luW", ma_curr/1000, ma_curr%1000, pwr/10, pwr%10);
+	}
+	lcd_nextline();
+	lcd_printf(" %d.%03dV %02d:%02d", mv_voltage/1000, mv_voltage%1000, uptime.min, uptime.sec);
+	
+	f_lcdPrint = 0;
 }

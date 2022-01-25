@@ -12,6 +12,8 @@
 #include "common.h"
 #include "twi_master_driver.h"
 
+#define LCD_SLAVE_ADDR			0x3e
+
 // instruction modifiers
 #define LCD_COBYTE	0x80u
 #define LCD_RS		0x40u

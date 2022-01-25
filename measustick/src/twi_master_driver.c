@@ -8,29 +8,7 @@
 #include "twi_master_driver.h"
 #include "lcd_top.h"
 
-
-
-
 TWI_Master_t twi;
-uint8_t twi_slAddr;
-
-#define SUCCESS 0xff
-
-inline unsigned char send_start(void)
-{
-	TWCR |= (1<<TWINT)|(1<<TWSTA)|(1<<TWEN);
-	
-	while (!(TWCR & (1<<TWINT)));
-	
-	if((TWSR != START)&&(TWSR != R_START))//If status other than START
-		return TWSR;						//transmitted(0x08) or Repeated
-	return SUCCESS;
-}
-
-inline void Send_stop(void)
-{
-	TWCR = ((1<<TWEN)+(1<<TWINT)+(1<<TWSTO));//Send STOP condition
-}
 
 //TWI portE master interrupt
 ISR(TWI_vect){
@@ -190,78 +168,4 @@ bool TWI_MasterWrite(uint8_t addr, uint8_t *data, uint8_t bytesToWrite)
 	} else {
 		return false;
 	}
-}
-void  Wait_TWI_int(){
-	while (!(TWCR & (1<<TWINT)));
-}
-unsigned char Send_adr(unsigned char adr)
-{
-	Wait_TWI_int();							//Wait for TWI interrupt flag set
-
-	TWDR = adr;
-	TWCR = ((1<<TWINT)+(1<<TWEN));   		//Clear int flag to send byte
-
-	Wait_TWI_int();							//Wait for TWI interrupt flag set
-
-	if((TWSR != SLAW_ACK)&&(TWSR != SLAR_ACK))//If NACK received return
-	//TWSR
-		return TWSR;
-	return SUCCESS;							//Else return SUCCESS
-}
-
-unsigned char Send_byte(unsigned char data)
-{
-	Wait_TWI_int();							//Wait for TWI interrupt flag set
-
-	TWDR = data;
-	TWCR = ((1<<TWINT)+(1<<TWEN));   		//Clear int flag to send byte
-
-	Wait_TWI_int();							//Wait for TWI interrupt flag set
-
-	if(TWSR != TX_ACK)				//If NACK received return TWSR
-		return TWSR;
-	return SUCCESS;							//Else return SUCCESS
-}
-
-
-
-unsigned char Send_to_TWI(tx_type *data_pack)
-{
-	unsigned char state,i,j;
-
-	state = SUCCESS;
-	
-	for(i=0;(data_pack[i].slave_adr != OWN_ADR)&&(state == SUCCESS);i++)
-	{
-		state = send_start();				//Send START and repeated START
-		if (state == SUCCESS)				
-			state = Send_adr(data_pack[i].slave_adr);//Send slave address+W/R
-		
-		/*Dependent on the R/W in the slave address it will receive or 
-		transmitt data.*/
-		if(!(data_pack[i].slave_adr & R))
-		{
-			/*If W, it will transmitt data and loops until all data have been
-			 shifted out*/
-			for(j=0;((j<data_pack[i].size)&&(state == SUCCESS));j++)
-				state = Send_byte(data_pack[i].data_ptr[j]);
-		}	
-		else								//Else read from slave 
-		{
-			/*If R, it will receive data and loops until all data have been
-			 shifted in. When j == 0x00 this is the last byte and a NACK 
-			 will be sent to the slave to make it stop transmitting */
-			for(j=0;((j<data_pack[i].size)&&(state == SUCCESS));j++)
-				;//state = Get_byte(data_pack[i].data_ptr++,j);
-		}					
-	}
-  	Send_stop();							//Send STOP
-  	  
-	return state;							//Return SUCCESS if OK, 
-											//else return TWSR 
-}
-
-void TWI_test(void)
-{
-	
 }

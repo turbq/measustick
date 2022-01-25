@@ -22,6 +22,8 @@
 #include <avr/wdt.h>
 #include <asf.h>
 
+#include "timers.h"
+
 /*! \brief This macro will protect the following code from interrupts. */
 #define AVR_ENTER_CRITICAL_REGION( ) uint8_t volatile saved_sreg = SREG; \
                                      cli();

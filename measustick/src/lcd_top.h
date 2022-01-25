@@ -12,11 +12,14 @@
 #include "common.h"
 #include "lcd_1602twi.h"
 
+extern uint8_t f_lcdPrint;
+
 void lcd_clr(void);
 void lcd_returnhome(void);
 void lcd_nextline(void);
 void lcd_setddram(uint8_t addr);
 void lcd_puts(char *string, uint8_t size);
 void lcd_printf(char *format, ...);
+void lcd_cout(void);
 
 #endif /* LCD_TOP_H_ */
