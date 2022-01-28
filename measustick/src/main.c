@@ -1,5 +1,5 @@
 #include <asf.h>
-#include "lcd_top.h"
+#include "common.h"
 
 int main (void)
 {

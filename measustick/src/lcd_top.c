@@ -54,9 +54,9 @@ void lcd_cout(void)
 	lcd_returnhome();
 	if (ma_curr < 0) {
 		ma_curr = abs(ma_curr);
-		lcd_printf("-%d.%03dA %lu.%luW", ma_curr/1000, ma_curr%1000, pwr/10, pwr%10);
-	} else {
 		lcd_printf(" %d.%03dA %lu.%luW", ma_curr/1000, ma_curr%1000, pwr/10, pwr%10);
+	} else {
+		lcd_printf("-%d.%03dA %lu.%luW", ma_curr/1000, ma_curr%1000, pwr/10, pwr%10);
 	}
 	lcd_nextline();
 	lcd_printf(" %d.%03dV %02d:%02d", mv_voltage/1000, mv_voltage%1000, uptime.min, uptime.sec);
