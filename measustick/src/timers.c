@@ -10,6 +10,7 @@
 #include "twi_master_driver.h"
 #include "ina220.h"
 
+volatile uint16_t ms=0;
 volatile daytime uptime;
 volatile uint16_t ms_delay;
 
@@ -37,14 +38,14 @@ void tc5_on(void)
 
 ISR(TIMER1_COMPA_vect)
 {
+	AVR_ENTER_CRITICAL_REGION();
 	if (ms_delay > 0){
 		ms_delay--;
 	}
-	uptime.ms++;
-	if (uptime.ms >= 1000){
+	if (ms++ == 1000){
 		uptime.glob_sec++;
 		uptime.sec++;
-		uptime.ms = 0;
+		ms = 0;
 	}
 	if (uptime.sec == 60){
 		uptime.sec = 0;
@@ -58,6 +59,7 @@ ISR(TIMER1_COMPA_vect)
 		uptime.hour = 0;
 		uptime.day++;
 	}
+	AVR_LEAVE_CRITICAL_REGION();
 }
 
 ISR(TIMER5_OVF_vect)

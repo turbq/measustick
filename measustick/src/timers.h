@@ -12,7 +12,6 @@
 #include "common.h"
 
 typedef struct {
-	uint16_t ms;
 	uint32_t glob_sec;       // uptime in seconds
 	uint8_t sec;
 	uint8_t min;
